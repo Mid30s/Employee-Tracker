@@ -3,17 +3,18 @@ const mysql = require('mysql2/promise');
 const figlet = require('figlet');
 
 async function start() {
-    //top banner using figlet
-    figlet("Employee Tracker", function(err, data) {
+  //top banner using figlet
+  figlet("Employee Tracker", function(err, data) {
         if (err) {
             console.log('Something went wrong...');
             console.dir(err);
             return;
         }
         console.log(data)
-    });
+  });
     
-    const connection = await mysql.createConnection({
+  //connect to database
+  const connection = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'abcd1234',
@@ -162,7 +163,10 @@ async function start() {
     const { name } = await inquirer.prompt({
       type: 'input',
       name: 'name',
-      message: 'What is the name of the department?'
+      message: 'What is the name of the department?',
+      //capitalize the first letter of each word
+      transformer: (input) => {
+        return input.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');}
     });
     await connection.execute(`
       INSERT INTO department (name)
@@ -212,12 +216,21 @@ async function start() {
       {
         type: 'input',
         name: 'title',
-        message: 'What is the name of the role?'
+        message: 'What is the name of the role?',
+        // capitalize the first letter of each word
+        transformer: (input) => {
+            return input.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');}
       },
       {
         type: 'input',
         name: 'salary',
-        message: 'What is the salary of the role?'
+        message: 'What is the salary of the role?',
+        validate: (input) => {
+            if (!Number.isInteger(Number(input))) {
+              return 'Please enter a valid salary number';
+            }
+            return true;
+        }
       },
       {
         type: 'list',
@@ -281,12 +294,18 @@ async function start() {
       {
         type: 'input',
         name: 'first_name',
-        message: "What is the employee's first name?"
+        message: "What is the employee's first name?",
+        transformer: (input) => {
+            return input.charAt(0).toUpperCase() + input.slice(1);
+        }
       },
       {
         type: 'input',
         name: 'last_name',
-        message: "What is the employee's last name?"
+        message: "What is the employee's last name?",
+        transformer: (input) => {
+            return input.charAt(0).toUpperCase() + input.slice(1);
+        }
       },
       {
         type: 'list',
@@ -390,9 +409,6 @@ async function start() {
     `, [role.id, employee.id]).catch(error => console.log(error));
     console.log(`Employee with ID ${employee.id} has been updated`);
     mainMenu();
-
-
-
   }
 
   // 14.update Employee Manager function
