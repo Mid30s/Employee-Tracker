@@ -1,6 +1,10 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2/promise');
 const figlet = require('figlet');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
 
 async function start() {
     //top banner using figlet
@@ -16,7 +20,7 @@ async function start() {
     const connection = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'gary282566',
+    password: process.env.DB_PASSWORD,
     database: 'company_db'
   });
 

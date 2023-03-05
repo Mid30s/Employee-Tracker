@@ -351,3 +351,6 @@ MigrationBackup/
 
 #MAC files
 .DS_Store
+
+#password file
+.env
