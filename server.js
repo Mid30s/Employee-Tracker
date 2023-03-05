@@ -27,42 +27,67 @@ async function start() {
       name: 'choice',
       message: 'What would you like to do?',
       choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
-        'Add a department',
-        'Add a role',
-        'Add an employee',
-        'Delete an employee',
-        'Update an employee role'
+        '🔍 View All Departments',
+        '🔍 View All Roles',
+        '🔍 View All Employees',
+        '📊 View All Employees By Department',
+        '👨 View All Employees By Manager',
+        '💰 View the total utilized budget of a department',
+        '🆕 Add a Department',
+        '❌ Delete an Department',
+        '🆕 Add a Role',
+        '❌ Delete an Role',
+        '🆕 Add an Employee',
+        '❌ Delete an Employee',
+        '🛠️ Update an Employee Role',
+        '🛠️ Update Employee Manager'
+        
       ]
     });
 
     // call the appropriate function based on the user's choice
     switch (choice) {
-      case 'View all departments':
+      case '🔍 View All Departments':
         viewAllDepartments();
         break;
-      case 'View all roles':
+      case '🔍 View All Roles':
         viewAllRoles();
         break;
-      case 'View all employees':
+      case '🔍 View All Employees':
         viewAllEmployees();
         break;
-      case 'Add a department':
+      case '📊 View All Employees By Department':
+        viewAllEmployeesByDepartment();
+        break; 
+      case '👨 View All Employees By Manager':
+        viewAllEmployeesByManager();
+        break;
+      case '💰 View the total utilized budget of a department':
+        viewTotalUtilizedBudget();
+        break;
+      case '🆕 Add a Department':
         addDepartment();
         break;
-      case 'Add a role':
+      case '❌ Delete an Department':
+        deleteDepartment();
+        break;
+      case '🆕 Add a Role':
         addRole();
         break;
-      case 'Add an employee':
+      case '❌ Delete an Role':
+        deleteRole();
+        break;
+      case '🆕 Add an Employee':
         addEmployee();
         break;
-      case 'Delete an employee':
+      case '❌ Delete an Employee':
         deleteEmployee();
         break;
-      case 'Update an employee role':
+      case '🛠️ Update an Employee Role':
         updateEmployeeRole();
+        break;
+      case '🛠️ Update Employee Manager':
+        updateEmployeeManager();
         break;
       default:
         console.log('Invalid choice');
