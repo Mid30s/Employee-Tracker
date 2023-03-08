@@ -192,8 +192,6 @@ async function start() {
     .catch(error => console.log(error));
     console.table(rows);
     mainMenu();
-    
-
   }
 
   // 6.view Total Utilized Budget function
@@ -516,8 +514,8 @@ async function start() {
       }
     ]);
   
-    const managerChoices = employeeChoices.filter(employeeChoice => employeeChoice.value !== employee.id);
-  
+    const managerChoices = employeeChoices.filter(employeeChoice => employeeChoice.value !== employee.id);  
+
     const manager = await inquirer.prompt([
       {
         type: 'list',
@@ -526,19 +524,14 @@ async function start() {
         choices: managerChoices
       }
     ]);
-  
+
     await connection.execute(`
       UPDATE employee SET manager_id = ? WHERE id = ?
     `, [manager.id, employee.id]).catch(error => console.log(error));
     console.log(`Employee with ID ${employee.id} has been updated`);
     mainMenu();
   }
-
-
-
-
 }
-
 
 // call the start function to start the program
 start(); 
