@@ -31,8 +31,8 @@ async function start() {
         '🔍 1.View All Departments',
         '🔍 2.View All Roles',
         '🔍 3.View All Employees',
-        '📊 4.View All Employees By Department',
-        '👨 5.View All Employees By Manager',
+        '📊 4.View Employees By Department',
+        '👨 5.View Employees By Manager',
         '💰 6.View the total utilized budget of a department',
         '🆕 7.Add a Department',
         '❌ 8.Delete an Department',
@@ -41,8 +41,8 @@ async function start() {
         '🆕 11.Add an Employee',
         '❌ 12.Delete an Employee',
         '🛠️ 13.Update an Employee Role',
-        '🛠️ 14.Update Employee Manager'
-        
+        '🛠️ 14.Update Employee Manager',
+        '🏃‍♂️ 15.Quit'  
       ]
     });
 
@@ -57,11 +57,11 @@ async function start() {
       case '🔍 3.View All Employees':
         viewAllEmployees();
         break;
-      case '📊 4.View All Employees By Department':
-        viewAllEmployeesByDepartment();
+      case '📊 4.View Employees By Department':
+        viewEmployeesByDepartment();
         break; 
-      case '👨 5.View All Employees By Manager':
-        viewAllEmployeesByManager();
+      case '👨 5.View Employees By Manager':
+        viewEmployeesByManager();
         break;
       case '💰 6.View the total utilized budget of a department':
         viewTotalUtilizedBudget();
@@ -90,8 +90,9 @@ async function start() {
       case '🛠️ 14.Update Employee Manager':
         updateEmployeeManager();
         break;
-      default:
-        console.log('Invalid choice');
+      case '🏃‍♂️ 15.Quit':
+        connection.end();
+        break;
     }
   }
 
@@ -134,28 +135,112 @@ async function start() {
     mainMenu();
   }  
     
-  // 4.view All Employees By Department function
-  async function viewAllEmployeesByDepartment() {
-
-
+  // 4.view Employees By Department function
+  async function viewEmployeesByDepartment() {
+    const departments = await connection.execute(`
+      SELECT * FROM department
+    `)
+    .catch(error => console.log(error));
+    const departmentChoices = departments[0].map(({ id, name }) => ({
+      name: name,
+      value: id
+    }));
+    const { departmentId } = await inquirer.prompt({
+      type: 'list',
+      name: 'departmentId',
+      message: 'Which department would you like to see the employees for?',
+      choices: departmentChoices
+    });
+    const [rows, fields] = await connection.execute(`
+      SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id
+      LEFT JOIN department ON role.department_id = department.id
+      WHERE department.id = ?
+    `, [departmentId])
+    .catch(error => console.log(error));
+    console.table(rows);
+    mainMenu();
   }
   
-  // 5.view All Employees By Manager function
-  async function viewAllEmployeesByManager() {
-
-
-
+  // 5.view Employees By Manager function
+  async function viewEmployeesByManager() {
+    const managers = await connection.execute(`
+      SELECT DISTINCT CONCAT(manager.first_name, ' ', manager.last_name) as manager
+      FROM employee
+      LEFT JOIN employee manager ON manager.id = employee.manager_id
+    `)
+    .catch(error => console.log(error));
+    const managerChoices = managers[0].map(({ manager }) => ({
+      name: manager,
+      value: manager
+    }));
+    const { manager } = await inquirer.prompt({
+      type: 'list',
+      name: 'manager',
+      message: 'Which manager would you like to see the employees for?',
+      choices: managerChoices
+    });
+    const [rows, fields] = await connection.execute(`
+      SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name as department, role.salary
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id
+      LEFT JOIN department ON role.department_id = department.id
+      LEFT JOIN employee manager ON manager.id = employee.manager_id
+      WHERE CONCAT(manager.first_name, ' ', manager.last_name) = ?
+    `, [manager])
+    .catch(error => console.log(error));
+    console.table(rows);
+    mainMenu();
+    
 
   }
 
   // 6.view Total Utilized Budget function
   async function viewTotalUtilizedBudget() { 
+    const departments = await connection.execute(`
+      SELECT * FROM department
+    `)
+    .catch(error => console.log(error));
+    const departmentChoices = departments[0].map(({ id, name }) => ({
+      name: name,
+      value: id
+    }));
 
+    // Add the "View all departments" option to the departmentChoices array
+    departmentChoices.push({ name: "View all departments", value: "ALL" });
 
+    const { departmentId } = await inquirer.prompt({
+      type: 'list',
+      name: 'departmentId',
+      message: 'Which department would you like to see the total utilized budget for?',
+      choices: departmentChoices
+    });
 
-
-
-
+    if(departmentId === "ALL"){
+      const [rows] = await connection.execute(`
+      SELECT department.name as department, SUM(role.salary) as total_budget
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id
+      LEFT JOIN department ON role.department_id = department.id
+      GROUP by department.name
+    `)
+    .catch(error => console.log(error));
+    console.table(rows);
+    } else {
+      const [rows, fields] = await connection.execute(`
+      SELECT department.name as department, SUM(role.salary) as total_budget
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id
+      LEFT JOIN department ON role.department_id = department.id
+      WHERE department.id = ?
+      GROUP by department.name
+    `, [departmentId])
+    .catch(error => console.log(error));
+    console.table(rows);
+    }
+    
+    mainMenu();
   }
 
   // 7.add Department function
@@ -413,9 +498,40 @@ async function start() {
 
   // 14.update Employee Manager function
   async function updateEmployeeManager() {
-
-
-
+    const employees = await connection.execute(`
+      SELECT * FROM employee
+    `).catch(error => console.log(error));
+  
+    const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
+      name: `${first_name} ${last_name}`,
+      value: id
+    }));
+  
+    const employee = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'id',
+        message: 'Which employee would you like to update?',
+        choices: employeeChoices
+      }
+    ]);
+  
+    const managerChoices = employeeChoices.filter(employeeChoice => employeeChoice.value !== employee.id);
+  
+    const manager = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'id',
+        message: 'Which manager would you like to assign to the selected employee?',
+        choices: managerChoices
+      }
+    ]);
+  
+    await connection.execute(`
+      UPDATE employee SET manager_id = ? WHERE id = ?
+    `, [manager.id, employee.id]).catch(error => console.log(error));
+    console.log(`Employee with ID ${employee.id} has been updated`);
+    mainMenu();
   }
 
 
