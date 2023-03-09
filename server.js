@@ -19,7 +19,10 @@ async function start() {
     user: 'root',
     password: 'abcd1234',
     database: 'company_db'
-  });
+  },
+  console.log(`Connected to the company_db database.`)
+
+  );
 
   // prompt the user with the main menu
   async function mainMenu() {

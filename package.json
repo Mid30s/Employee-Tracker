@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Mid30s/Employee-Tracker#readme",
   "dependencies": {
+    "chalk": "^5.2.0",
     "console.table": "^0.10.0",
     "figlet": "^1.5.2",
     "inquirer": "^8.2.4",
