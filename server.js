@@ -102,7 +102,9 @@ async function start() {
   // 1.view All Departments function
   async function viewAllDepartments() {
     const [rows, fields] = await connection.execute(`
-      SELECT * FROM department
+      SELECT id,
+      CONCAT(UPPER(SUBSTRING(name, 1, 1)), LOWER(SUBSTRING(name, 2))) as name 
+      FROM department
     `)
     .catch(error => console.log(error));
     console.table(rows);
@@ -127,7 +129,8 @@ async function start() {
   // 3.view All Employees function
   async function viewAllEmployees() {
     const [rows, fields] = await connection.execute(`
-      SELECT employee.id, CONCAT(UPPER(SUBSTRING(employee.first_name, 1, 1)), LOWER(SUBSTRING(employee.first_name, 2))) as first_name,
+      SELECT employee.id, 
+      CONCAT(UPPER(SUBSTRING(employee.first_name, 1, 1)), LOWER(SUBSTRING(employee.first_name, 2))) as first_name,
       CONCAT(UPPER(SUBSTRING(employee.last_name, 1, 1)), LOWER(SUBSTRING(employee.last_name, 2))) as last_name,
       CONCAT(UPPER(SUBSTRING(role.title, 1, 1)), LOWER(SUBSTRING(role.title, 2))) as title,
       CONCAT(UPPER(SUBSTRING(department.name, 1, 1)), LOWER(SUBSTRING(department.name, 2))) as department, role.salary,
