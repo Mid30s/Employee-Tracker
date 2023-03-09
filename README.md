@@ -36,10 +36,9 @@ npm install
 
 ## Usage
 
-To view this application,the following image shows the landing page of the application, or click on the page link that demonstrates the functionality of this project:
+To view this application,the following image shows the landing page of the application, or click on the page link that demonstrates the functionality of this project:\
 <https://drive.google.com/file/d/1pjZoeNHyLtQaLCwrDou7ymsYr-EE7KsX/view>
 
-![Demo video](https://github.com/Mid30s/Employee-Tracker/tree/main/assets/videos/Employee-Tracker.mp4)
 
 ![Employee-Tracker](./assets/images/1.png)
 
