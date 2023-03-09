@@ -112,7 +112,10 @@ async function start() {
   // 2.view All Roles function
   async function viewAllRoles() {
     const [rows, fields] = await connection.execute(`
-      SELECT role.id, role.title, department.name as department, role.salary
+      SELECT role.id,
+      CONCAT(UPPER(SUBSTRING(role.title, 1, 1)), LOWER(SUBSTRING(role.title, 2))) as title,
+      CONCAT(UPPER(SUBSTRING(department.name, 1, 1)), LOWER(SUBSTRING(department.name, 2))) as department,
+      role.salary
       FROM role
       LEFT JOIN department ON role.department_id = department.id
     `)
@@ -124,7 +127,11 @@ async function start() {
   // 3.view All Employees function
   async function viewAllEmployees() {
     const [rows, fields] = await connection.execute(`
-      SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name as department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) as manager
+      SELECT employee.id, CONCAT(UPPER(SUBSTRING(employee.first_name, 1, 1)), LOWER(SUBSTRING(employee.first_name, 2))) as first_name,
+      CONCAT(UPPER(SUBSTRING(employee.last_name, 1, 1)), LOWER(SUBSTRING(employee.last_name, 2))) as last_name,
+      CONCAT(UPPER(SUBSTRING(role.title, 1, 1)), LOWER(SUBSTRING(role.title, 2))) as title,
+      CONCAT(UPPER(SUBSTRING(department.name, 1, 1)), LOWER(SUBSTRING(department.name, 2))) as department, role.salary,
+      CONCAT(manager.first_name, ' ', manager.last_name) as manager
       FROM employee
       LEFT JOIN role ON employee.role_id = role.id
       LEFT JOIN department ON role.department_id = department.id
@@ -132,9 +139,8 @@ async function start() {
     `)
     .catch(error => console.log(error));
     console.table(rows);
-    mainMenu();
+    mainMenu(); 
   }  
-    
   // 4.view Employees By Department function
   async function viewEmployeesByDepartment() {
     const departments = await connection.execute(`
@@ -171,10 +177,13 @@ async function start() {
       LEFT JOIN employee manager ON manager.id = employee.manager_id
     `)
     .catch(error => console.log(error));
-    const managerChoices = managers[0].map(({ manager }) => ({
+    const managerChoices = managers[0]
+    .filter(({ manager }) => manager !== null)
+    .map(({ manager }) => ({
       name: manager,
       value: manager
     }));
+
     const { manager } = await inquirer.prompt({
       type: 'list',
       name: 'manager',
@@ -337,7 +346,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const roleChoices = roles[0].map(({ id, title }) => ({
-      name: title,
+      name: title.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
     const { roleId } = await inquirer.prompt({
@@ -419,7 +428,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
-      name: `${first_name} ${last_name}`,
+      name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
   
@@ -456,7 +465,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
-      name: `${first_name} ${last_name}`,
+      name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
   
@@ -501,7 +510,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
-      name: `${first_name} ${last_name}`,
+      name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
   
