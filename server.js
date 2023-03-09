@@ -101,6 +101,7 @@ async function start() {
 
   // 1.view All Departments function
   async function viewAllDepartments() {
+    //make name column title case
     const [rows, fields] = await connection.execute(`
       SELECT id,
       CONCAT(UPPER(SUBSTRING(name, 1, 1)), LOWER(SUBSTRING(name, 2))) as name 
@@ -113,6 +114,7 @@ async function start() {
 
   // 2.view All Roles function
   async function viewAllRoles() {
+    //make title column and department column title case
     const [rows, fields] = await connection.execute(`
       SELECT role.id,
       CONCAT(UPPER(SUBSTRING(role.title, 1, 1)), LOWER(SUBSTRING(role.title, 2))) as title,
@@ -128,6 +130,7 @@ async function start() {
   
   // 3.view All Employees function
   async function viewAllEmployees() {
+    //make first_name, last_name, title, department, and manager column title case
     const [rows, fields] = await connection.execute(`
       SELECT employee.id, 
       CONCAT(UPPER(SUBSTRING(employee.first_name, 1, 1)), LOWER(SUBSTRING(employee.first_name, 2))) as first_name,
@@ -151,7 +154,8 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const departmentChoices = departments[0].map(({ id, name }) => ({
-      name: name,
+      //make name column title case
+      name: name.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
     const { departmentId } = await inquirer.prompt({
@@ -213,7 +217,8 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const departmentChoices = departments[0].map(({ id, name }) => ({
-      name: name,
+      //make name column title case
+      name: name.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
 
@@ -228,6 +233,7 @@ async function start() {
     });
 
     if(departmentId === "ALL"){
+      // If the user selects "View all departments", then show the total utilized budget for all departments
       const [rows] = await connection.execute(`
       SELECT department.name as department, SUM(role.salary) as total_budget
       FROM employee
@@ -238,6 +244,7 @@ async function start() {
     .catch(error => console.log(error));
     console.table(rows);
     } else {
+      // If the user selects a specific department, then show the total utilized budget for that department
       const [rows, fields] = await connection.execute(`
       SELECT department.name as department, SUM(role.salary) as total_budget
       FROM employee
@@ -279,6 +286,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const departmentChoices = departments[0].map(({ id, name }) => ({
+      //make name column title case
       name: name.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
@@ -304,6 +312,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const departmentChoices = departments[0].map(({ id, name }) => ({
+      //make name column title case
       name: name.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
@@ -320,6 +329,7 @@ async function start() {
         type: 'input',
         name: 'salary',
         message: 'What is the salary of the role?',
+        // validate salary input
         validate: (input) => {
             if (!Number.isInteger(Number(input))) {
               return 'Please enter a valid salary number';
@@ -349,6 +359,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const roleChoices = roles[0].map(({ id, title }) => ({
+      //make name column title case
       name: title.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
@@ -373,6 +384,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const roleChoices = roles[0].map(({ id, title }) => ({
+      //make name column title case
       name: title.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
@@ -381,15 +393,18 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
+      //make name column title case
       name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
+    // add 'none' option to manager list if no manager
     employeeChoices.unshift({ name: 'None', value: null });
     const employee = await inquirer.prompt([
       {
         type: 'input',
         name: 'first_name',
         message: "What is the employee's first name?",
+        // capitalize the first letter of each word 
         transformer: (input) => {
             return input.charAt(0).toUpperCase() + input.slice(1);
         }
@@ -398,6 +413,7 @@ async function start() {
         type: 'input',
         name: 'last_name',
         message: "What is the employee's last name?",
+        // capitalize the first letter of each word
         transformer: (input) => {
             return input.charAt(0).toUpperCase() + input.slice(1);
         }
@@ -431,6 +447,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
+      //make name column title case
       name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
@@ -468,6 +485,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
+      //make name column title case
       name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
@@ -486,6 +504,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const roleChoices = roles[0].map(({ id, title }) => ({
+      //make name column title case
       name: title.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
@@ -513,6 +532,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
+      //make name column title case
       name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
