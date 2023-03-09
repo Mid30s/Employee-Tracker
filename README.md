@@ -37,11 +37,14 @@ npm install
 ## Usage
 
 To view this application,the following image shows the landing page of the application, or click on the page link that demonstrates the functionality of this project:
+<https://drive.google.com/file/d/1pjZoeNHyLtQaLCwrDou7ymsYr-EE7KsX/view>
 
 ![Employee-Tracker](./assets/images/1.png)
+
 ![Employee-Tracker](./assets/images/2.png)
+
 ![Employee-Tracker](./assets/images/3.png)
-![Employee-Tracker](./assets/images/4.png)
+
 
 ## License
 

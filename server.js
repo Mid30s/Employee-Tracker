@@ -279,7 +279,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const departmentChoices = departments[0].map(({ id, name }) => ({
-      name: name,
+      name: name.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
     const { departmentId } = await inquirer.prompt({
@@ -304,7 +304,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const departmentChoices = departments[0].map(({ id, name }) => ({
-      name: name,
+      name: name.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
     const role = await inquirer.prompt([
@@ -373,7 +373,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const roleChoices = roles[0].map(({ id, title }) => ({
-      name: title,
+      name: title.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
     const employees = await connection.execute(`
@@ -381,7 +381,7 @@ async function start() {
     `)
     .catch(error => console.log(error));
     const employeeChoices = employees[0].map(({ id, first_name, last_name }) => ({
-      name: `${first_name} ${last_name}`,
+      name: `${first_name.charAt(0).toUpperCase()}${first_name.slice(1)} ${last_name.charAt(0).toUpperCase()}${last_name.slice(1)}`,
       value: id
     }));
     employeeChoices.unshift({ name: 'None', value: null });
@@ -486,7 +486,7 @@ async function start() {
     `).catch(error => console.log(error));
   
     const roleChoices = roles[0].map(({ id, title }) => ({
-      name: title,
+      name: title.replace(/\b\w/g, c => c.toUpperCase()),
       value: id
     }));
   
